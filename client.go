@@ -24,6 +24,7 @@ type Client struct {
 	coon    *http.Client
 	key     string
 	baseURL string
+	ChainID string
 
 	// Verbose when true, talks a lot
 	Verbose bool
@@ -39,11 +40,12 @@ type Client struct {
 
 // New initialize a new etherscan API client
 // please use pre-defined network value
-func New(network Network, APIKey string) *Client {
+func New(chainID string, APIKey string) *Client {
 	return NewCustomized(Customization{
 		Timeout: 30 * time.Second,
 		Key:     APIKey,
-		BaseURL: fmt.Sprintf(`https://%s.etherscan.io/api?`, network.SubDomain()),
+		ChainID: chainID,
+		BaseURL: fmt.Sprintf(`https://api.etherscan.io/v2/api?`),
 	})
 }
 
@@ -60,7 +62,8 @@ type Customization struct {
 	// HTTP Client to be used. Specifying this value will ignore the Timeout value set
 	// Set your own timeout.
 	Client *http.Client
-
+	//chainid
+	ChainID string
 	// BeforeRequest runs before every client request, in the same goroutine.
 	// May be used in rate limit.
 	// Request will be aborted, if BeforeRequest returns non-nil err.
@@ -84,6 +87,7 @@ func NewCustomized(config Customization) *Client {
 	return &Client{
 		coon:          httpClient,
 		key:           config.Key,
+		ChainID:       config.ChainID,
 		baseURL:       config.BaseURL,
 		Verbose:       config.Verbose,
 		BeforeRequest: config.BeforeRequest,
@@ -194,9 +198,10 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 // craftURL returns desired URL via param provided
 func (c *Client) craftURL(module, action string, param map[string]interface{}) (URL string) {
 	q := url.Values{
-		"module": []string{module},
-		"action": []string{action},
-		"apikey": []string{c.key},
+		"chainid": []string{c.ChainID},
+		"module":  []string{module},
+		"action":  []string{action},
+		"apikey":  []string{c.key},
 	}
 
 	for k, v := range param {

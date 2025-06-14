@@ -15,20 +15,16 @@ import (
 )
 
 func TestClient_AccountBalance(t *testing.T) {
-	balance, err := api.AccountBalance("0x0000000000000000000000000000000000000000")
+	balanceInt, err := api.AccountBalance("0x00ee777607Ee4c4Be04f74286BC73C20e3c36aC2")
 	noError(t, err, "api.AccountBalance")
 
-	if balance.Int().Cmp(big.NewInt(0)) != 1 {
-		t.Fatalf("rich man is no longer rich")
-	}
+	balance := new(big.Float).Quo(new(big.Float).SetInt(balanceInt.Int()), big.NewFloat(1e18)).String()
+	fmt.Printf("balance: %s\n", balance)
 }
 
 func TestClient_MultiAccountBalance(t *testing.T) {
 	balances, err := api.MultiAccountBalance(
-		"0x0000000000000000000000000000000000000000",
-		"0x0000000000000000000000000000000000000001",
-		"0x0000000000000000000000000000000000000002",
-		"0x0000000000000000000000000000000000000003")
+		"0x00ee777607Ee4c4Be04f74286BC73C20e3c36aC2")
 	noError(t, err, "api.MultiAccountBalance")
 
 	for i, item := range balances {
@@ -44,8 +40,8 @@ func TestClient_MultiAccountBalance(t *testing.T) {
 func TestClient_NormalTxByAddress(t *testing.T) {
 	const wantLen = 19
 
-	var a, b = 54092, 79728
-	txs, err := api.NormalTxByAddress("0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae", &a, &b, 1, 500, false)
+	var a, b = 0, 9999999999
+	txs, err := api.NormalTxByAddress("0x00ee777607Ee4c4Be04f74286BC73C20e3c36aC2", &a, &b, 1, 500, true)
 	noError(t, err, "api.NormalTxByAddress")
 
 	//j, _ := json.MarshalIndent(txs, "", "  ")

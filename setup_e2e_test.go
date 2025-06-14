@@ -8,8 +8,6 @@
 package etherscan
 
 import (
-	"fmt"
-	"os"
 	"testing"
 	"time"
 )
@@ -26,13 +24,10 @@ var (
 )
 
 func init() {
-	apiKey = os.Getenv(apiKeyEnvName)
-	if apiKey == "" {
-		panic(fmt.Sprintf("API key is empty, set env variable %q with a valid API key to proceed.", apiKeyEnvName))
-	}
+	apiKey = "5SPAA3V1AE726C7JG78PNN5WIXGKETVYCX"
 	bucket = NewBucket(500 * time.Millisecond)
 
-	api = New(Mainnet, apiKey)
+	api = New(TestnetBNB, apiKey)
 	api.Verbose = true
 	api.BeforeRequest = func(module string, action string, param map[string]interface{}) error {
 		bucket.Take()
